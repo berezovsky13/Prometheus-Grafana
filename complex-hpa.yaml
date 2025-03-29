@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: complex-app
-        image: your-registry/complex-app:latest  # Replace with your image
+        image: berezovsky8/hpa-app:latest
         resources:
           requests:
             cpu: 200m
@@ -24,6 +24,9 @@ spec:
             memory: 512Mi
         ports:
         - containerPort: 80
+          name: http
+        - containerPort: 8000
+          name: metrics
         readinessProbe:
           httpGet:
             path: /
@@ -47,6 +50,10 @@ spec:
   ports:
   - port: 80
     targetPort: 80
+    name: http
+  - port: 8000
+    targetPort: 8000
+    name: metrics
   type: NodePort
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -60,8 +67,9 @@ spec:
     matchLabels:
       app: complex-app
   endpoints:
-  - port: http
+  - port: metrics
     interval: 15s
+    path: /metrics
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
