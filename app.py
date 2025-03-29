@@ -21,18 +21,6 @@ def update_metrics():
         queue_size.set(request_queue.qsize())
         time.sleep(1)
 
-def cpu_intensive_task():
-    while True:
-        # Simulate CPU load
-        [i * i for i in range(10000)]
-
-def memory_intensive_task():
-    # Simulate memory load
-    large_list = []
-    while True:
-        large_list.append([0] * 1000000)
-        time.sleep(0.1)
-
 @app.route('/')
 def home():
     return jsonify({"status": "healthy"})
@@ -64,9 +52,23 @@ def load_memory():
 @app.route('/load/http')
 def load_http():
     # Simulate HTTP request load
-    request_queue.put(1)
-    http_requests_total.inc()
-    return jsonify({"message": "HTTP request queued"})
+    for _ in range(10):  # Add 10 requests at once
+        request_queue.put(1)
+        http_requests_total.inc()
+    return jsonify({"message": "HTTP requests queued"})
+
+def cpu_intensive_task():
+    while True:
+        # Simulate CPU load
+        [i * i for i in range(10000)]
+
+def memory_intensive_task():
+    # Simulate memory load
+    large_list = []
+    while True:
+        # Allocate 50MB at a time
+        large_list.append([0] * (50 * 1024 * 1024))
+        time.sleep(0.1)
 
 if __name__ == '__main__':
     # Start Prometheus metrics server
