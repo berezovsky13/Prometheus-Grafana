@@ -51,11 +51,11 @@ def load_memory():
 
 @app.route('/load/http')
 def load_http():
-    # Simulate HTTP request load - now adding 50 requests at once
-    for _ in range(50):  # Increased from 10 to 50
+    # Simulate HTTP request load - adding 500 requests total
+    for _ in range(500):  # Generate 500 requests
         request_queue.put(1)
         http_requests_total.inc()
-    return jsonify({"message": "HTTP requests queued"})
+    return jsonify({"message": "500 HTTP requests queued"})
 
 def cpu_intensive_task():
     while True:
