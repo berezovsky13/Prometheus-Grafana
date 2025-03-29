@@ -5,7 +5,7 @@ prometheus:
     serviceMonitorNamespaceSelector: {}
     podMonitorSelector: {}
     podMonitorNamespaceSelector: {}
-    retention: 7d
+    retention: 12h
     resources:
       requests:
         cpu: 150m
@@ -13,13 +13,18 @@ prometheus:
       limits:
         cpu: 500m
         memory: 2Gi
+  service:
+    type: NodePort
+    nodePort: 30900
 
 grafana:
   enabled: true
+  service:
+    type: NodePort
+    nodePort: 30901
   adminPassword: admin
   persistence:
-    enabled: true
-    size: 5Gi
+    enabled: false
   resources:
     requests:
       cpu: 100m
@@ -27,6 +32,18 @@ grafana:
     limits:
       cpu: 200m
       memory: 256Mi
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards
 
 alertmanager:
   enabled: true
@@ -40,4 +57,7 @@ alertmanager:
       repeat_interval: 4h
       receiver: 'null'
     receivers:
-    - name: 'null' 
+    - name: 'null'
+  service:
+    type: NodePort
+    nodePort: 30902 
